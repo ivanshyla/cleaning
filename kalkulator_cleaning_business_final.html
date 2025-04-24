@@ -118,7 +118,7 @@
       <output id="years-output">3</output>
     </div>
     <button onclick="calculateBusiness()">Рассчитать</button>
-    <div class="results" id="results"></div>
+    <div class="results" id="results" style="display:none;"></div>
   </div>
   <script>
     function toggleFranchiseFee() {
@@ -173,6 +173,7 @@
       }
       const resultsContainer = document.getElementById("results");
       resultsContainer.innerHTML = "";
+      resultsContainer.style.display = "block";
       resultsContainer.style.display = "block";
       resultsContainer.scrollIntoView({ behavior: 'smooth' });
       resultsContainer.innerHTML = `
