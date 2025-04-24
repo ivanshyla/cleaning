@@ -135,7 +135,7 @@
 
     <button onclick="calculateBusiness()">Рассчитать</button>
 
-    <div class="results" id="results"></div>
+    <div class="results" id="results" style="display: none;"></div>
   </div>
 
   <script>
@@ -197,7 +197,9 @@
         resultsText += `<tr><td>${y}</td><td>${revenue.toFixed(0)}</td><td>${adCost.toFixed(0)}</td><td>${fixedCosts.toFixed(0)}</td><td>${tax.toFixed(0)}</td><td${profitClass}>${profit.toFixed(0)}</td><td>${cumulativeProfit.toFixed(0)}</td></tr>`;
       }
 
-      document.getElementById("results").style.display = "block";
+      const resultsContainer = document.getElementById("results");
+resultsContainer.style.display = "block";
+resultsContainer.scrollIntoView({ behavior: 'smooth' });
       document.getElementById("results").innerHTML = `
         <p><strong>Срок окупаемости:</strong> ${roiYear ? roiYear + ' год' + (roiYear > 1 ? 'а' : '') : 'ещё не достигнута'}</p>
         <table>
