@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Калькулятор клинингового бизнеса</title>
+  
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -91,17 +92,6 @@
       <select id="model" onchange="toggleFranchiseFee()">
         <option value="own">Свой бизнес (разработка сайта и CRM)</option>
         <option value="franchise">Франшиза (3–5% от выручки)</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label for="city-size">Размер города:</label>
-      <select id="city-size">
-        <option value="small">Маленький (до 250k)</option>
-        <option value="medium">Средний (250–500k)</option>
-        <option value="large" selected>Большой (500k+)</option>
-        <option value="xl">Крупный (1 млн+)</option>
-        <option value="xxl">Мегаполис (2 млн+)</option>
       </select>
     </div>
 
@@ -226,5 +216,3 @@
         </table>`;
     }
   </script>
-</body>
-</html>
