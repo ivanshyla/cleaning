@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -66,6 +65,166 @@
   </style>
 </head>
 <body>
-  <!-- Тело калькулятора останется прежним -->
+  <div class="calculator">
+    <h2>Калькулятор открытия клинингового бизнеса</h2>
+    <p style="color: #666; font-size: 14px;">
+      Расчёты основаны на реальных цифрах: цена привлечения клиента ~100 zł, возврат до 40%, рекламные расходы до 30%.
+      Максимальный объём заказов зависит от размера города и отражает реальные ограничения рынка.
+    </p>
+
+    <div class="form-group">
+      <label for="scenario">Сценарий развития:</label>
+      <select id="scenario">
+        <option value="base" selected>Базовый</option>
+        <option value="optimistic">Оптимистичный</option>
+        <option value="pessimistic">Пессимистичный</option>
+      </select>
+      <p style="color: #666; font-size: 13px; margin-top: 5px;">
+        <strong>Базовый</strong> — до 20 заказов/день на 3-й год.<br>
+        <strong>Оптимистичный</strong> — до 35 заказов/день на 3-й год.<br>
+        <strong>Пессимистичный</strong> — максимум 15 заказов/день на 3-й год.
+      </p>
+    </div>
+
+    <div class="form-group">
+      <label for="model">Формат запуска:</label>
+      <select id="model" onchange="toggleFranchiseFee()">
+        <option value="own">Свой бизнес (разработка сайта и CRM)</option>
+        <option value="franchise">Франшиза (3–5% от выручки)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="city-size">Размер города:</label>
+      <select id="city-size">
+        <option value="small">Маленький (до 250k)</option>
+        <option value="medium">Средний (250–500k)</option>
+        <option value="large" selected>Большой (500k+)</option>
+        <option value="xl">Крупный (1 млн+)</option>
+        <option value="xxl">Мегаполис (2 млн+)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="avg-price">Средний чек (zł):</label>
+      <input type="number" id="avg-price" value="250">
+    </div>
+
+    <div class="form-group">
+      <label for="cac">Цена привлечения клиента (CAC) (zł):</label>
+      <input type="number" id="cac" value="100">
+    </div>
+
+    <div class="form-group">
+      <label for="return-rate">Процент возврата клиентов (%):</label>
+      <input type="range" id="return-rate" min="0" max="50" value="40" oninput="this.nextElementSibling.value = this.value">
+      <output>40</output>%
+    </div>
+
+    <div class="form-group">
+      <label for="ad-costs">Доля расходов на рекламу от всех затрат (%):</label>
+      <input type="number" id="ad-costs" value="30">
+    </div>
+
+    <div class="form-group" id="franchise-fee-group" style="display: none;">
+      <label for="franchise-fee">Франшиза: процент от выручки:</label>
+      <input type="range" id="franchise-fee" min="3" max="5" value="4" oninput="this.nextElementSibling.value = this.value">
+      <output>4</output>%
+    </div>
+
+    <div class="form-group">
+      <label for="initial-investment">Стартовые инвестиции (офис, реклама, зарплаты, сайт и CRM и т.д.), zł:</label>
+      <input type="number" id="initial-investment" value="30000">
+    </div>
+
+    <div class="form-group">
+      <label for="years">Срок моделирования (лет):</label>
+      <input type="range" id="years" min="1" max="5" value="3" oninput="this.nextElementSibling.value = this.value">
+      <output>3</output>
+    </div>
+
+    <button onclick="calculateBusiness()">Рассчитать</button>
+
+    <div class="results" id="results"></div>
+  </div>
+
+  <script>
+    function toggleFranchiseFee() {
+      const model = document.getElementById('model').value;
+      document.getElementById('franchise-fee-group').style.display = model === 'franchise' ? 'block' : 'none';
+    }
+
+    function calculateBusiness() {
+      toggleFranchiseFee();
+
+      const model = document.getElementById('model').value;
+      const scenario = document.getElementById('scenario').value;
+      const avgPrice = parseFloat(document.getElementById('avg-price').value);
+      const cac = parseFloat(document.getElementById('cac').value);
+      const returnRate = parseFloat(document.getElementById('return-rate').value) / 100;
+      const adCostPercent = parseFloat(document.getElementById('ad-costs').value) / 100;
+      const franchiseFee = parseFloat(document.getElementById('franchise-fee').value) / 100;
+      const baseInvestment = parseFloat(document.getElementById('initial-investment').value);
+      const devCosts = model === 'own' ? 30000 : 0;
+      const initialInvestment = baseInvestment + devCosts;
+      const years = parseInt(document.getElementById('years').value);
+
+      let clients = 0;
+      let cumulativeProfit = -initialInvestment;
+      let roiYear = null;
+      let resultsText = "";
+
+      for (let y = 1; y <= years; y++) {
+        let dailyLimit = 0;
+        if (scenario === 'optimistic') {
+          dailyLimit = y === 1 ? 15 : y === 2 ? 25 : 35;
+        } else if (scenario === 'base') {
+          dailyLimit = y === 1 ? 10 : y === 2 ? 15 : 20;
+        } else {
+          dailyLimit = y === 1 ? 5 : y === 2 ? 10 : 15;
+        }
+
+        let newClients = dailyLimit * 30;
+        let repeatClients = Math.round(clients * returnRate);
+        clients += newClients;
+
+        const totalOrders = (newClients + repeatClients) * 12;
+        const revenue = totalOrders * avgPrice;
+        const cleanersCost = revenue * 0.5;
+        const adMultiplier = scenario === 'optimistic' ? 0.9 : scenario === 'pessimistic' ? 1.2 : 1.0;
+        const adCost = totalOrders * cac * adMultiplier;
+        const operationalCosts = (revenue - cleanersCost - adCost) * adCostPercent;
+        const monthlyOperational = model === 'own' ? 6000 : 4000;
+        const fixedCosts = monthlyOperational * 12;
+        const royalty = model === 'franchise' ? revenue * franchiseFee : 0;
+        const taxableIncome = revenue - cleanersCost - adCost - operationalCosts - royalty - fixedCosts;
+        const tax = taxableIncome > 0 ? taxableIncome * 0.19 : 0;
+        const profit = taxableIncome - tax;
+
+        cumulativeProfit += profit;
+        if (roiYear === null && cumulativeProfit > 0) roiYear = y;
+        const profitClass = profit < 0 ? ' style="color:red;font-weight:bold"' : '';
+        resultsText += `<tr><td>${y}</td><td>${revenue.toFixed(0)}</td><td>${adCost.toFixed(0)}</td><td>${fixedCosts.toFixed(0)}</td><td>${tax.toFixed(0)}</td><td${profitClass}>${profit.toFixed(0)}</td><td>${cumulativeProfit.toFixed(0)}</td></tr>`;
+      }
+
+      document.getElementById("results").style.display = "block";
+      document.getElementById("results").innerHTML = `
+        <p><strong>Срок окупаемости:</strong> ${roiYear ? roiYear + ' год' + (roiYear > 1 ? 'а' : '') : 'ещё не достигнута'}</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Год</th>
+              <th>Доход (zł)</th>
+              <th>Реклама (zł)</th>
+              <th>ЗП и офис (zł)</th>
+              <th>Налоги (zł)</th>
+              <th>Чистая прибыль (zł)</th>
+              <th>Накопленная прибыль (zł)</th>
+            </tr>
+          </thead>
+          <tbody>${resultsText}</tbody>
+        </table>`;
+    }
+  </script>
 </body>
 </html>
