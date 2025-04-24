@@ -32,6 +32,29 @@
       padding: 8px;
       box-sizing: border-box;
     }
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      background: #ddd;
+      border-radius: 5px;
+      outline: none;
+      transition: background 0.3s;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #4CAF50;
+      cursor: pointer;
+      box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+      transition: transform 0.2s ease;
+    }
+    input[type=range]:active::-webkit-slider-thumb {
+      transform: scale(1.2);
+    }
     button {
       width: 100%;
       padding: 12px;
@@ -48,6 +71,7 @@
       background: #e6ffe6;
       padding: 15px;
       border-radius: 4px;
+      overflow: hidden;
     }
     table {
       width: 100%;
@@ -118,7 +142,7 @@
       <output id="years-output">3</output>
     </div>
     <button onclick="calculateBusiness()">Рассчитать</button>
-    <div class="results" id="results" style="display:none;"></div>
+    <div class="results" id="results"></div>
   </div>
   <script>
     function toggleFranchiseFee() {
@@ -174,6 +198,7 @@
       const resultsContainer = document.getElementById("results");
       resultsContainer.innerHTML = "";
       resultsContainer.style.display = "block";
+      resultsContainer.style.minHeight = "auto";
       resultsContainer.style.display = "block";
       resultsContainer.scrollIntoView({ behavior: 'smooth' });
       resultsContainer.innerHTML = `
